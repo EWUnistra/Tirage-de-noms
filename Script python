@@ -1,0 +1,49 @@
+import tkinter as tk
+from tkinter import filedialog
+import random
+
+class RandomNamePicker:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Random Name Picker")
+
+        self.file_label = tk.Label(self.root, text="Veuillez télécharger un fichier de données contenant une liste de noms.")
+        self.file_label.pack(pady=10)
+
+        self.upload_button = tk.Button(self.root, text="Télécharger un fichier", command=self.upload_file)
+        self.upload_button.pack(pady=5)
+
+        self.num_names_label = tk.Label(self.root, text="Nombre de noms à tirer au hasard :")
+        self.num_names_label.pack()
+
+        self.num_names_entry = tk.Entry(self.root)
+        self.num_names_entry.pack()
+
+        self.pick_button = tk.Button(self.root, text="Tirer au hasard", command=self.pick_random_names)
+        self.pick_button.pack(pady=5)
+
+    def upload_file(self):
+        file_path = filedialog.askopenfilename()
+        if file_path:
+            with open(file_path, 'r') as file:
+                self.names = [line.strip() for line in file.readlines()]
+            self.file_label.config(text=f"Fichier téléchargé : {file_path}")
+
+    def pick_random_names(self):
+        try:
+            num_names = int(self.num_names_entry.get())
+            if num_names <= 0:
+                raise ValueError("Le nombre de noms doit être supérieur à zéro.")
+            elif num_names > len(self.names):
+                raise ValueError("Le nombre de noms à tirer est supérieur au nombre de noms dans le fichier.")
+            else:
+                random_names = random.sample(self.names, num_names)
+                result = ", ".join(random_names)
+                tk.messagebox.showinfo("Noms tirés au hasard", f"Noms tirés au hasard : {result}")
+        except ValueError as e:
+            tk.messagebox.showerror("Erreur", str(e))
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = RandomNamePicker(root)
+    root.mainloop()
